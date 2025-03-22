@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Product List</h2>
+  {% if ocr_text %}
+    <h3>OCR Text:</h3>
+    <pre>{{ ocr_text }}</pre>
+    <form method="post" action="{% url 'add_from_ocr' %}">
+      {% csrf_token %}
+      <input type="hidden" name="ocr_text" value="{{ ocr_text }}">
+      <button type="submit">Add Extracted Products to Cart</button>
+    </form>
+    <br>
+  {% endif %}
+  <ul>
+    {% for product in products %}
+      <li>
+        {{ product.name }} - ${{ product.price }}
+        <form method="post" action="{% url 'add_to_cart' product.pk %}">
+          {% csrf_token %}
+          <button type="submit">Add to Cart</button>
+        </form>
+      </li>
+    {% endfor %}
+  </ul>
+  {% if scan_prescription %}
+    <form method="post" action="{% url 'ocr_scan' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="file" name="image" accept="image/*">
+      <button type="submit">Scan Prescription</button>
+    </form>
+  {% endif %}
+{% endblock %}
